@@ -1,3 +1,5 @@
 /hooking
 *.xlsx
+.DS_STORE
+
 python-crawler/*
