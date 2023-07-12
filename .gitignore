@@ -1,5 +1,6 @@
 /hooking
 *.xlsx
 .DS_STORE
-
+.env
+output.txt
 python-crawler/*

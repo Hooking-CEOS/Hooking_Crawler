@@ -4,6 +4,9 @@ import openpyxl
 import json
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+import dotenv
+import os
+
 
 # *******************************
 # Variable Needs to be changed
@@ -12,6 +15,8 @@ input_filename = '프레시안_0706_30' # input 파일명
 brand_name = "프레시안" # 브랜드명 (brandData에 있는 브랜드명)
 max_data = 30  # 최대 데이터 개수
 # *******************************
+
+
 
 dictBrand = [
   { "name_kr": "이니스프리", "api_id": "7" },
@@ -55,6 +60,8 @@ class CopyCrawler(object):
         self.excel_sheet_name = input_filename
         self.output_filename = input_filename + '_parsed.xlsx'
         self.body = {}
+        dotenv.load_dotenv()
+        self.serverUrl = os.getenv('SERVER_URL')
 
 
     # html requests
@@ -71,7 +78,7 @@ class CopyCrawler(object):
            
     def post_request(self):
         headers = {'Content-type': 'application/json'}
-        response = requests.post("https://hooking.shop/copy/crawling", json.dumps(self.body), headers=headers)
+        response = requests.post(self.serverUrl, json.dumps(self.body), headers=headers)
         # 상태 코드
         print(response.status_code)
         print(response.json())
