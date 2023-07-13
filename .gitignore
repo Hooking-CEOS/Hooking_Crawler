@@ -4,3 +4,4 @@
 .env
 output.txt
 python-crawler/*
+test.json
