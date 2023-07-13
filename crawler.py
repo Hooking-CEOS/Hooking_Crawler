@@ -131,7 +131,7 @@ class CopyCrawler(object):
 
     def run(self):
         self.get_data()
-        # self.post_request()
+        self.post_request()
 
 
 copycrawler = CopyCrawler(input_filename, brand_name)
