@@ -11,8 +11,8 @@ import os
 # *******************************
 # Variable Needs to be changed
 # *******************************
-input_filename = "미샤_0712"  # input 파일명
-brand_name = "미샤"  # 브랜드명 (brandData에 있는 브랜드명)
+input_filename = "아비브_0712"  # input 파일명
+brand_name = "아비브"  # 브랜드명 (brandData에 있는 브랜드명)
 # *******************************
 
 
@@ -66,14 +66,11 @@ class CopyCrawler(object):
         if response.status_code == 200:
             html = response.text
             bs = BeautifulSoup(html, "html.parser")
-            target_text = bs.select_one("title").get_text()
-            if target_text.startswith("\n"):
-                target_text = target_text.lstrip("\n")
-                print(target_text)
+            target_text = bs.select_one("title").get_text().lstrip('\n').replace('\r',' ')
             target_json = json.loads(
                 bs.select_one('script[type="application/ld+json"]').get_text()
             )
-            return target_text.split('"')[1], target_json[0]["dateCreated"][:-6]
+            return '\"'.join(target_text.split('"')[1:-1]), target_json[0]["dateCreated"][:-6]
         else:
             print(response.status_code)
 
@@ -129,10 +126,34 @@ class CopyCrawler(object):
         print("body", self.body)
         pd.DataFrame(excel).T.to_excel(excel_writer=self.output_filename)
 
+    def test_data(self):
+        url = input()
+        response = requests.get(url)
+        if response.status_code == 200:
+            html = response.text
+            bs = BeautifulSoup(html, "html.parser")
+            target_text = bs.select_one("title").get_text()
+            tmp = 'MISSHA 미샤 on Instagram: "'
+            # print(target_text.split('"')[1])
+            # print('-------------------------')
+            # target_text = target_text.lstrip(tmp).rstrip('"')
+            print(target_text)
+            print('-------------------------------')
+            print('\"'.join(target_text.split('"')[1:-1]))
+        else:
+            print(response.status_code)
+
+
     def run(self):
         self.get_data()
         self.post_request()
+    
+    def test(self):
+        self.test_data()
 
 
 copycrawler = CopyCrawler(input_filename, brand_name)
+
 copycrawler.run()
+
+# copycrawler.test()

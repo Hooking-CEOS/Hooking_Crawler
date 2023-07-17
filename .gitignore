@@ -5,3 +5,4 @@
 output.txt
 python-crawler/*
 test.json
+*.json
