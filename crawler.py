@@ -66,7 +66,7 @@ class CopyCrawler(object):
         if response.status_code == 200:
             html = response.text
             bs = BeautifulSoup(html, "html.parser")
-            target_text = bs.select_one("title").get_text().lstrip('\n').replace('\r',' ')
+            target_text = bs.select_one("title").get_text().lstrip('\n').replace('\r','\n')
             target_json = json.loads(
                 bs.select_one('script[type="application/ld+json"]').get_text()
             )
@@ -99,16 +99,19 @@ class CopyCrawler(object):
         pd.set_option("display.max_columns", None)
         res_text = []
         res_date = []
+        res_url = []
         self.max_data = len(df["Url"])
 
         for idx, url in tqdm(enumerate(df["Url"]), total=self.max_data):
             T, D = self.get_text(idx, url)
             res_text.append(T)
             res_date.append(D)
+            res_url.append(url)
 
         excel = []
         excel.append(res_text)
         excel.append(res_date)
+        excel.append(res_url)
 
         data = []
         for i in range(self.max_data):
@@ -116,6 +119,7 @@ class CopyCrawler(object):
                 "text": res_text[i],
                 "createdAt": res_date[i],
                 "brandId": int(self.find_dict(name_kr=self.brand_name)),
+                # "url": res_url[i]
             }
             data.append(copy)
         self.body["data"] = data
