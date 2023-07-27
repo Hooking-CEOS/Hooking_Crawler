@@ -11,8 +11,8 @@ import os
 # *******************************
 # Variable Needs to be changed
 # *******************************
-input_filename = "아비브_0712"  # input 파일명
-brand_name = "아비브"  # 브랜드명 (brandData에 있는 브랜드명)
+input_filename = "에스쁘아_0718"  # input 파일명
+brand_name = "에스쁘아"  # 브랜드명 (brandData에 있는 브랜드명)
 # *******************************
 
 
@@ -66,17 +66,26 @@ class CopyCrawler(object):
         if response.status_code == 200:
             html = response.text
             bs = BeautifulSoup(html, "html.parser")
-            target_text = bs.select_one("title").get_text().lstrip('\n').replace('\r','\n')
-            target_json = json.loads(
-                bs.select_one('script[type="application/ld+json"]').get_text()
-            )
-            return '\"'.join(target_text.split('"')[1:-1]), target_json[0]["dateCreated"][:-6]
+            try:
+                target_text = bs.select_one("title").get_text().lstrip(
+                    '\n').replace('\r', '\n')
+                target_json = json.loads(
+                    bs.select_one(
+                        'script[type="application/ld+json"]').get_text()
+                )
+                return '\"'.join(target_text.split('"')[1:-1]), target_json[0]["dateCreated"][:-6]
+            except:
+                print('-----exception handling needed-----')
+                print(idx, url)
+                return '\"'.join(target_text.split('"')[1:-1]), '-----fix-----'
+
         else:
             print(response.status_code)
 
     def post_request(self):
         headers = {"Content-type": "application/json"}
-        response = requests.post(self.serverUrl, json.dumps(self.body), headers=headers)
+        response = requests.post(
+            self.serverUrl, json.dumps(self.body), headers=headers)
         # 상태 코드
         print(response.status_code)
         print(response.json())
@@ -119,7 +128,7 @@ class CopyCrawler(object):
                 "text": res_text[i],
                 "createdAt": res_date[i],
                 "brandId": int(self.find_dict(name_kr=self.brand_name)),
-                # "url": res_url[i]
+                "url": res_url[i]
             }
             data.append(copy)
         self.body["data"] = data
@@ -147,11 +156,10 @@ class CopyCrawler(object):
         else:
             print(response.status_code)
 
-
     def run(self):
         self.get_data()
-        self.post_request()
-    
+        # self.post_request()
+
     def test(self):
         self.test_data()
 
